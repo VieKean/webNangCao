@@ -63,3 +63,27 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+ALTER TABLE `users`
+MODIFY `id` VARCHAR(7) NOT NULL;
+
+
+DELIMITER $$
+
+CREATE TRIGGER `before_insert_user` 
+BEFORE INSERT ON `users`
+FOR EACH ROW
+BEGIN
+    DECLARE max_id INT;
+    DECLARE new_id VARCHAR(7);
+
+    -- Lấy phần số lớn nhất hiện tại từ cột id
+    SELECT IFNULL(MAX(CAST(SUBSTRING(id, 5) AS UNSIGNED)), 0) INTO max_id FROM users;
+
+    -- Tạo id mới với phần số tăng lên 1
+    SET new_id = CONCAT('USER', LPAD(max_id + 1, 3, '0'));
+
+    -- Gán id mới cho bản ghi
+    SET NEW.id = new_id;
+END$$
+
+DELIMITER ;

@@ -8,41 +8,18 @@ import initWebRoute from './route/webRoute'
 const app = express();
 const port = process.env.PORT
 
+
+
+// Cần có các dòng này trong `app.js` hoặc file chính
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+
 initWebRoute(app)
 viewEngine(app);
 
 
-// app.get('/', (req, res)=>
-//     {
-//         res.render("home");
-//     }
-// )
 
-// app.get('/about', (req, res)=>
-//     {
-//         res.render("about");
-//     }
-// )
-
-
-// app.get('/date', (req, res) => {
-//     const mydate = myDateTime();
-//     res.send(`Ngày hiện tại: ${mydate}`);
-// });
-
-// // app.get('/getpara', (req, res) => {
-// //     const para = getParamsURL(req);
-// //     res.send(para);
-// // });
-
-// app.get('/geturl', (req, res) => {
-//     const path = getPath(req);
-//     res.send(path);
-// });
-
-// app.get('/ejs', (req, res) => {
-//     res.render("test");
-// });
 
 
 app.listen(port, ()=>{
