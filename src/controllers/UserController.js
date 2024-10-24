@@ -1,25 +1,33 @@
 import express from "express"
 import userModel from "../Model/userModel"
+import bcrypt from 'bcrypt';
+
 const getAllUser = async (req, res) => {
     let userList = await userModel.getAllUser()
     res.render('home', { data: { title: 'List User', page: 'listUser', rows: userList } })
 }
 
+
 const createUser = async (req, res) => {
-    const { username, fullname, address, email } = req.body
+    const { username, hashedPassword, confirmPassword, fullname, address, sex, email } = req.body;
+
+    // Kiểm tra nếu mật khẩu và xác nhận mật khẩu khớp
+    if (hashedPassword !== confirmPassword) {
+        return res.status(400).json({ message: 'Mật khẩu không khớp' });
+    }
+
     try {
-        const newUserId = await userModel.createUser(username, fullname, address, email)
+        // Băm mật khẩu
+        const hashed = await bcrypt.hash(hashedPassword, 10);
+
+        // Lưu người dùng vào cơ sở dữ liệu
+        const userId = await userModel.createUser(username, hashed, fullname, address, sex, email);
         return res.redirect('/listuser')
     } catch (error) {
-        console.error(
-            'Error adding user:',
-            error
-        )
-        return res
-            .status(500)
-            .send('Error adding user')
+        console.error('Error creating user:', error);
+        res.status(500).json({ message: 'Lỗi khi lưu người dùng vào cơ sở dữ liệu' });
     }
-}
+};
 const viewUserDetails = async (req, res) => {
     const userId = req.params.id;
     try {
@@ -85,4 +93,31 @@ const deleteUser = async (req, res) => {
         return res.status(500).send('Server error');
     }
 };
-export default { getAllUser, createUser, viewUserDetails, editUser, updateUser, deleteUser }
+const getLogin = (req, res) => {
+    return res.render("home", {data: {title: 'Trang login', content : 'nội dung trang login', page:'login'}})
+}
+const loginUser = async (req, res) => {
+    const { username, password } = req.body;
+
+    try {
+        const user = await userModel.findUserByUsername(username);
+        if (!user) {
+            return res.status(401).json({ message: 'Tên người dùng hoặc mật khẩu không đúng' });
+        }
+
+        // Kiểm tra mật khẩu
+        const match = await bcrypt.compare(password, user.password);
+        if (!match) {
+            return res.status(401).json({ message: 'Tên người dùng hoặc mật khẩu không đúng' });
+        }
+
+        // Đăng nhập thành công
+        req.session.userId = user.id; // Lưu ID người dùng vào phiên
+        // res.status(200).json({ message: 'Đăng nhập thành công' });
+    } catch (error) {
+        console.error('Error logging in:', error);
+        res.status(500).json({ message: 'Lỗi khi đăng nhập' });
+    }
+};
+
+export default { getAllUser, createUser, viewUserDetails, editUser, updateUser, deleteUser, loginUser,getLogin }

@@ -12,6 +12,7 @@
     <div class="container mt-5">
         <h2>Sửa Thông Tin Người Dùng</h2>
         <form method="POST" action="/editUser/<%= user.id %>" enctype="application/x-www-form-urlencoded">
+            <!-- //Không cần action vẫn oke -->
             <div class="mb-3">
                 <label for="username" class="form-label">Tên tài khoản</label>
                 <input type="text" class="form-control" id="username" name="username" value="<%= user.username %>" required />

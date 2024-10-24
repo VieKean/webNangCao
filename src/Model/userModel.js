@@ -5,19 +5,14 @@ const getAllUser = async () => {
   return rows
 }
 
-const createUser = async (
-  username,
-  fullname,
-  address,
-  email,
-) => {
-  const [result] =
-    await connection.execute(
-      'INSERT INTO users (username, fullname, address, email) VALUES (?, ?, ?, ?)',
-      [username, fullname, address, email]
-    )
-  return result.insertId
-}
+const createUser = async (username, password, fullname, address, sex, email) => {
+  const [result] = await connection.execute(
+      'INSERT INTO users (username, password, fullname, address, sex, email) VALUES (?, ?, ?, ?, ?, ?)',
+      [username, password, fullname, address, sex, email]
+  );
+  return result.insertId; // Trả về ID của bản ghi mới được chèn
+};
+
 
 
 const getUserById = async (id) => {
@@ -37,4 +32,10 @@ const deleteUser = async (id) => {
   const [result] = await pool.execute('DELETE FROM users WHERE id = ?', [id]);
   return result; 
 };
-export default { getAllUser, createUser, getUserById, updateUser, deleteUser}
+
+// Hàm xác thực người dùng
+const findUserByUsername = async (username) => {
+  const [rows] = await connection.execute('SELECT * FROM users WHERE username = ?', [username]);
+  return rows[0]; // Trả về thông tin người dùng nếu tìm thấy
+};
+export default { getAllUser, createUser, getUserById, updateUser, deleteUser, findUserByUsername}
