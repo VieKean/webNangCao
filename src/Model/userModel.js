@@ -5,13 +5,15 @@ const getAllUser = async () => {
   return rows
 }
 
-const createUser = async (username, password, fullname, address, sex, email) => {
+const createUser = async (username, password, fullname, address, sex, email, role = 'user', accountStatus = 'hoạt động') => {
   const [result] = await connection.execute(
-      'INSERT INTO users (username, password, fullname, address, sex, email) VALUES (?, ?, ?, ?, ?, ?)',
-      [username, password, fullname, address, sex, email]
+      'INSERT INTO users (username, password, fullname, address, sex, email, role, account_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+      [username, password, fullname, address, sex, email, role, accountStatus]
   );
   return result.insertId; // Trả về ID của bản ghi mới được chèn
 };
+
+
 
 
 
@@ -20,10 +22,10 @@ const getUserById = async (id) => {
   return rows[0];
 };
 
-const updateUser = async (id, username, fullname, address, email) => {
+const updateUser = async (id, fullname, address, sex, email) => {
   const [result] = await pool.execute(
-      'UPDATE users SET username = ?, fullname = ?, address = ?, email = ? WHERE id = ?',
-      [username, fullname, address, email, id]
+      'UPDATE users SET fullname = ?, address = ?, sex = ?, email = ? WHERE id = ?',
+      [fullname, address, sex, email, id]
   );
   return result; 
 };
@@ -33,9 +35,9 @@ const deleteUser = async (id) => {
   return result; 
 };
 
-// Hàm xác thực người dùng
-const findUserByUsername = async (username) => {
+
+const findByUsername = async (username) => {
   const [rows] = await connection.execute('SELECT * FROM users WHERE username = ?', [username]);
-  return rows[0]; // Trả về thông tin người dùng nếu tìm thấy
+  return rows[0]; // Return the user if found
 };
-export default { getAllUser, createUser, getUserById, updateUser, deleteUser, findUserByUsername}
+export default { getAllUser, createUser, getUserById, updateUser, deleteUser, findByUsername}

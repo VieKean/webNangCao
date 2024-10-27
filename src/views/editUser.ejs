@@ -12,11 +12,8 @@
     <div class="container mt-5">
         <h2>Sửa Thông Tin Người Dùng</h2>
         <form method="POST" action="/editUser/<%= user.id %>" enctype="application/x-www-form-urlencoded">
-            <!-- //Không cần action vẫn oke -->
-            <div class="mb-3">
-                <label for="username" class="form-label">Tên tài khoản</label>
-                <input type="text" class="form-control" id="username" name="username" value="<%= user.username %>" required />
-            </div>
+            <!-- Không cần action vẫn oke -->
+
             <div class="mb-3">
                 <label for="fullname" class="form-label">Họ và tên</label>
                 <input type="text" class="form-control" id="fullname" name="fullname" value="<%= user.fullname %>" required />
@@ -25,6 +22,16 @@
                 <label for="address" class="form-label">Địa chỉ</label>
                 <input type="text" class="form-control" id="address" name="address" value="<%= user.address %>" required />
             </div>
+            <div class="mb-3">
+                <label for="sex" class="form-label">Giới tính</label>
+                <select class="form-select" id="sex" name="sex" required>
+                    <option value="" disabled selected>Chọn giới tính</option>
+                    <option value="male" <%= user.sex === 'male' ? 'selected' : '' %>>Nam</option>
+                    <option value="female" <%= user.sex === 'female' ? 'selected' : '' %>>Nữ</option>
+                    <option value="other" <%= user.sex === 'other' ? 'selected' : '' %>>Khác</option>
+                </select>
+            </div>
+            
             <div class="mb-3">
                 <label for="email" class="form-label">Email</label>
                 <input type="email" class="form-control" id="email" name="email" value="<%= user.email %>" required />

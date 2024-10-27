@@ -3,37 +3,33 @@ import getHomePage from "../controllers/HomeController";
 import aboutPage from "../controllers/AboutController";
 import contactPage from "../controllers/ContactController";
 import UserController from "../controllers/UserController";
-import checkAuth from "../middleware/auth"
+import checkLogin from "../middleware/auth";
+import checkUserPermissions from "../middleware/checkPermissions";
 
-const router = express.Router()
+const router = express.Router();
+
 const initWebRoute = (app) => {
-    router.get('/', (req, res) => {
-        if (req.session && req.session.user) {
-            res.redirect('/dashboard');
-        } else {
-            res.redirect('/login');
-        }
-    });
-
+    // Public routes
+    router.get('/', getHomePage);
     router.get('/about', aboutPage);
     router.get('/contact', contactPage);
-    router.get('/get-session', (req, res) => {
-        res.send(req.session);
-    });
-
     router.get('/login', UserController.getLogin);
     router.post('/login', UserController.loginUser);
+    router.post('/logout', UserController.logoutUser);
+    router.get('/listuser', UserController.getAllUser);
+    router.get('/register', UserController.getRegister); 
+    router.post('/register', UserController.registerUser); 
 
-    // Apply authentication for protected routes
-    router.get('/listuser', checkAuth, UserController.getAllUser);
-    router.post('/createUser', checkAuth, UserController.createUser);
-    router.get('/listuser/:id', checkAuth, UserController.viewUserDetails);
-    router.get('/editUser/:id', checkAuth, UserController.editUser); 
-    router.post('/editUser/:id', checkAuth, UserController.updateUser); 
-    router.post('/deleteUser/:id', checkAuth, UserController.deleteUser);
+
+    // Protected routes requiring login
+    router.post('/createUser', checkLogin, UserController.createUser);
+    router.get('/listuser/:id', checkLogin, checkUserPermissions('view'), UserController.viewUserDetails);
+    router.get('/editUser/:id', checkLogin, checkUserPermissions('edit'), UserController.editUser);
+    router.post('/editUser/:id', checkLogin, checkUserPermissions('edit'), UserController.updateUser);
+    router.post('/deleteUser/:id', checkLogin, checkUserPermissions('delete'), UserController.deleteUser);
 
     return app.use('/', router);
 };
 
 
-export default initWebRoute
+export default initWebRoute;
