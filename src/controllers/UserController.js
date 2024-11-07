@@ -140,8 +140,6 @@ const getLogin = (req, res) => {
 
 const loginUser = async (req, res) => {
     const { username, password } = req.body;
-
-    // Lấy người dùng từ cơ sở dữ liệu theo username
     const user = await userModel.findByUsername(username);
 
     if (!user) {
@@ -182,7 +180,7 @@ const getRegister = (req, res) => {
 };
 
 const registerUser = async (req, res) => {
-    const { username, password, confirmPassword, fullname, address, sex, email } = req.body; // Loại bỏ 'role'
+    const { username, password, confirmPassword, fullname, address, sex, email } = req.body;
 
     // Kiểm tra nếu mật khẩu và xác nhận mật khẩu khớp
     if (password !== confirmPassword) {

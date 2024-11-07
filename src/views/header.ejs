@@ -1,7 +1,6 @@
-<!-- header.ejs -->
-<nav class="navbar navbar-expand-lg" style="background: linear-gradient(to right, #6a11cb, #2575fc);">
+<nav class="navbar navbar-expand-lg" style="background: linear-gradient(to right, #6a11cb, #2575fc); padding-left: 100px; padding-right: 100px;">
   <div class="container-fluid">
-    <a class="navbar-brand text-white" href="/">Levi Khang</a>
+    <img style="width: 100px; height: 100px;" src="images/logo300x300.png" alt="Logo">
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
       aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
@@ -20,24 +19,39 @@
         <li class="nav-item">
           <a class="nav-link text-white" href="/listuser">List User</a>
         </li>
+
+        <!-- Dropdown menu for categories -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle text-white" href="#" id="categoryDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Categories
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="categoryDropdown">
+            <% categories.forEach(category => { %>
+              <li><a class="dropdown-item" href="/products/category/<%= category.category_id %>"><%= category.name %></a></li>
+            <% }) %>
+          </ul>
+          
+        </li>
       </ul>
-      <% if (!user) { %><a class="nav-link text-white" href="/register">Tạo tài khoản User</a><% } %>
-      <ul class="navbar-nav">
-        <% if (user) { %>
-          <li class="nav-item">
-            <span class="text-white me-3">Xin chào: <%= user.username %></span>
-          </li>
-          <li class="nav-item">
-            <form action="/logout" method="POST" style="display: inline;">
-              <button type="submit" class="btn btn-danger btn-sm">Đăng xuất</button>
-            </form>
-          </li>
-        <% } else { %>
-          <li class="nav-item">
-            <a class="nav-link text-white" href="/login">Đăng nhập</a>
-          </li>
+
+      <% if (!user) { %><a class="nav-link text-white" href="/register">Tạo tài khoản User</a>
         <% } %>
-      </ul>
+          <ul class="navbar-nav">
+            <% if (user) { %>
+              <li class="nav-item">
+                <span class="text-white me-3">Xin chào: <%= user.username %></span>
+              </li>
+              <li class="nav-item">
+                <form action="/logout" method="POST" style="display: inline;">
+                  <button type="submit" class="btn btn-danger btn-sm">Đăng xuất</button>
+                </form>
+              </li>
+              <% } else { %>
+                <li class="nav-item">
+                  <a class="nav-link text-white" href="/login">Đăng nhập</a>
+                </li>
+                <% } %>
+          </ul>
     </div>
   </div>
 </nav>

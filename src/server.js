@@ -4,11 +4,12 @@ import myDateTime from '../date.js'
 import { getPath, getParamsURL } from '../getURL.js'
 import viewEngine from './configs/viewEngine.js'
 import initWebRoute from './route/webRoute'
+import initAPIRoute from './route/apiRoute'
 import bodyParser from 'body-parser'
 import session from 'express-session'
 import RedisStore from "connect-redis"
 import {createClient} from "redis"
-
+import { addCategoriesToLocals } from './middleware/categoryMiddleware.js';
 
 
 const app = express();
@@ -30,12 +31,13 @@ app.use(session({
     secret: 'VieKean',
     resave: false,
     saveUninitialized: false, 
-    // cookie: { secure: false }
+    cookie: { secure: false }
 }))
 
 
-
-// // Cần có 2 dòng này
+// Thêm middleware trước khi định nghĩa các route
+app.use(addCategoriesToLocals);
+// // Cần có 2 dòng này gọi thẳng mặt bởi express
 // app.use(express.json());
 // app.use(express.urlencoded({ extended: true }));
 
@@ -43,12 +45,9 @@ app.use(session({
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
-
-initWebRoute(app)
+initWebRoute(app);
+initAPIRoute(app)
 viewEngine(app);
-
-
-
 
 
 app.listen(port, () => {
