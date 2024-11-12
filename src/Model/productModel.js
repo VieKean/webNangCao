@@ -1,8 +1,9 @@
+// productModel.js
 import mysql from 'mysql2/promise';
-import connection from '../configs/connectDB'
+import connection from '../configs/connectDB';
 
 export const getAllProducts = async () => {
-  const [rows,fields] = await connection.execute('SELECT * FROM product');
+  const [rows, fields] = await connection.execute('SELECT * FROM product');
   return rows;
 };
 

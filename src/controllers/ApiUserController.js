@@ -2,6 +2,7 @@ import express from 'express';
 import * as userModel from "../Model/userModel"
 import bcrypt from 'bcrypt';
 
+
 const getAllUsers = async (req, res) => {
   let users = await userModel.getAllUser();
   return res.status(200).json({
@@ -147,53 +148,33 @@ const updateUser = async (req, res) => {
     }
   }
   const login = async (req, res) => {
-    const { username, password } = req.body; // Nhận username và password từ body yêu cầu
-  
-    // Kiểm tra xem username và password có được cung cấp không
-    if (!username || !password) {
-      return res.status(400).json({
-        errCode: 1,
-        message: "Thiếu username hoặc password",
-      });
-    }
+    const { username, password } = req.body;
   
     try {
-      // Kiểm tra xem user có tồn tại trong hệ thống không
+      // Tìm người dùng theo tên đăng nhập
       const user = await userModel.findUserByUsername(username);
-      
-      // Nếu không tìm thấy user
       if (!user) {
-        return res.status(404).json({
-          errCode: 1,
-          message: "User không tồn tại",
-        });
+        return res.status(400).json({ message: 'Invalid credentials' });
       }
   
-      // Kiểm tra mật khẩu (giả sử bạn có một hàm kiểm tra mật khẩu)
+      // Kiểm tra mật khẩu
       const isPasswordValid = await userModel.verifyPassword(password, user.password);
       if (!isPasswordValid) {
-        return res.status(401).json({
-          errCode: 1,
-          message: "Mật khẩu không đúng",
-        });
+        return res.status(400).json({ message: 'Invalid credentials' });
       }
   
-      // Nếu login thành công
-      return res.status(200).json({
-        errCode: 0,
-        message: "Đăng nhập thành công",
-        user: {
-          id: user.id,
-          username: user.username,
-          // Thêm các thông tin khác nếu cần
-        }
-      });
+      // Kiểm tra vai trò người dùng (Cải thiện kiểm tra vai trò)
+      const isAdmin = user.role === 'admin'; // Hoặc bạn có thể sử dụng một cách kiểm tra linh hoạt hơn
+
+      // Tạo JWT token với thông tin người dùng và vai trò
+      const token = userModel.generateToken({ id: user.id, username: user.username, isAdmin });
+
+      res.json({ token });
     } catch (error) {
-      console.error(error);
-      return res.status(500).json({
-        errCode: 1,
-        message: "Đã xảy ra lỗi khi đăng nhập",
-      });
+      console.error('Login error:', error);
+      res.status(500).json({ message: 'Internal server error' });
     }
-  };
+};
+
+  
 export default { getAllUsers, detailUser, createUser, updateUser, delUser, login  };

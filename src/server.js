@@ -10,10 +10,12 @@ import session from 'express-session'
 import RedisStore from "connect-redis"
 import {createClient} from "redis"
 import { addCategoriesToLocals } from './middleware/categoryMiddleware.js';
+import cors from 'cors';
+
 
 
 const app = express();
-const port = process.env.PORT
+const port = process.env.PORT||8081
 
 // Initialize client.
 let redisClient = createClient()
@@ -24,6 +26,9 @@ let redisStore = new RedisStore({
   client: redisClient,
   prefix: "myapp:",
 })
+app.use(cors({
+  origin: 'http://localhost:3000'  // Chỉ cho phép truy cập từ frontend trên localhost:3000
+}));
 
 
 app.use(session({
